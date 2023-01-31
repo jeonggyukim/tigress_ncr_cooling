@@ -1,0 +1,24 @@
+<problem>
+ngrid = 161
+log_nH_min = -2.0
+log_nH_max = 6.0
+z_g = 1.0
+z_d = 1.0
+chi0 = 1.0
+xi_cr0 = 2.0e-16
+t_end_Myr = 1000.0
+temp_mu_init = 1e3
+
+<shielding>
+nH0 = 100.0
+len_shld0 = 5.0
+pow_idx_shld = -0.7
+col_shld_cr_cgs = 9.35e20
+
+<cooling>
+nsub_max = 50
+flag_dust_cool = 1
+
+<opacity>
+sigma_dust_pe0 = 1e-21
+sigma_dust_lw0 = 2e-21
