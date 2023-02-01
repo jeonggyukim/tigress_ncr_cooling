@@ -4,6 +4,7 @@
 // Licensed under the 3-clause BSD License, see LICENSE file for details
 //========================================================================================
 #include <cmath>
+#include <string>
 
 #include "defs.hpp"
 #include "cooling_tigress.hpp"
@@ -235,7 +236,8 @@ int main(int argc, char *argv[]) {
   // }
 
   ChangeRunDir(prundir);
-  char filename[] = "./Result.txt";
+  std::string filename = pinput->GetString("job","problem_id");
+  filename.append(".txt");
 
   WriteData(filename,
             nH, press,

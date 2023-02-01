@@ -42,7 +42,7 @@ Real* LogSpace(Real a, Real b, int k) {
 
 
 
-void WriteData(char *filename,
+void WriteData(std::string filename,
                Real *nH, Real *press,
                Real *x_h2, Real *x_hii, Real *x_e,
                Real *chi_pe, Real *chi_lw,

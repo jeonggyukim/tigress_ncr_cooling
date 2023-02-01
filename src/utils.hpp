@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <iomanip>
-
 #include "defs.hpp"
 
 template<typename T> void PrintElement(std::ostream& os, T t, const int& width)
@@ -13,7 +12,7 @@ template<typename T> void PrintElement(std::ostream& os, T t, const int& width)
 
 void ChangeRunDir(const char *pdir);
 Real* LogSpace(Real a, Real b, int k);
-void WriteData(char *filename,
+void WriteData(std::string filename,
                Real *nH, Real *press,
                Real *x_h2, Real *x_hii, Real *x_e,
                Real *chi_pe, Real *chi_lw,
