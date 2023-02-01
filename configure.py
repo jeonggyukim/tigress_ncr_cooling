@@ -28,7 +28,7 @@ def c_to_cpp(arg):
 # --cxx=[name] argument
 parser.add_argument(
     '--cxx',
-    default='g++-12',
+    default='icpx',
     type=c_to_cpp,
     choices=cxx_choices,
     help='select C++ compiler and default set of flags (works w/ or w/o -mpi)')
