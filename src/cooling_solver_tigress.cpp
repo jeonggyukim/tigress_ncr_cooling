@@ -62,20 +62,6 @@ static const Real temp_dust0 = 5.0;
 
 static const Real dvdr = 3.240779289444365e-14;
 
-void PrintCoolVar(CoolVar &cv) {
-  std::cout << " nH " << cv.nH
-            << " temp_mu " << cv.temp_mu
-            << " x_h2 " << cv.x_h2
-            << " x_hii " << cv.x_hii
-            << " x_hi " << cv.x_hi
-            << " x_e " << cv.x_e
-            << " crate " << cv.cool_rate
-            << " hrate " << cv.heat_rate
-            << " temp_dust " << cv.temp_dust
-            << std::endl;
-  return;
-}
-
 CoolingSolverTigress::CoolingSolverTigress(int flag_dust_cool,
                                            Real sigma_dust_pe0,
                                            Real sigma_dust_lw0,
@@ -401,15 +387,9 @@ void CoolingSolverTigress::CoolingExplicitSubcycling(CoolVar& cv, const Real t_e
   
   while ((nsub < nsub_max_) && (t_done < t_end)) {
     dt_sub = std::max(0.0, t_left);
-    flag_bad_dt_sub = DoOneSubstepAlt(cv, dt_sub);
+    flag_bad_dt_sub = DoOneSubstep(cv, dt_sub);
     nsub++;
     t_done += dt_sub;
-    if (nsub > 1000) {
-      std::cout << "nsub " << nsub
-                << " nbad " << flag_bad_dt_sub
-                << " dt_sub " << dt_sub;
-      PrintCoolVar(cv);
-    }
     if (flag_bad_dt_sub > nbad_dt_max) {
       // If a cell gets flagged repeately, it's usually a bad cell produced by
       // Riemann solver and has extremely low pressure. There is not much
@@ -425,49 +405,6 @@ void CoolingSolverTigress::CoolingExplicitSubcycling(CoolVar& cv, const Real t_e
   return;
 }
 
-int CoolingSolverTigress::DoOneSubstepAlt(CoolVar& cv, Real& dt_sub) {
-
-  CalculateCoolingRates(cv);
-  CalculateChemicalRates(cv);
-  dt_sub = std::min(dt_sub, cfl_cool_sub/std::fabs(cv.it_cool_net));
-  dt_sub = std::min(dt_sub, cfl_cool_sub/cv.it_hii);
-  if (cv.it_h2 != HUGE_NUMBER)
-    // Skipped for hot gas
-    dt_sub = std::min(dt_sub, cfl_cool_sub/cv.it_h2);
-
-  CoolVar cv1 = cv;
-  
-  int temp_ok = UpdateTemperature(cv, dt_sub);
-  CalculateChemicalRates(cv);
-  UpdateChemistry(cv, dt_sub);
-  if (cv.len_shld > 0.0) UpdateRadiationField(cv);
-  // Save stage 2 data
-  CalculateCoolingRates(cv);
-  CalculateChemicalRates(cv);
-  CoolVar cv2 = cv;
-
-  cv.cool_rate = 0.5*(cv1.cool_rate + cv2.cool_rate);
-  cv.heat_rate = 0.5*(cv1.cool_rate + cv2.heat_rate);
-  cv.df_dtemp_mu = 0.5*(cv1.df_dtemp_mu + cv2.df_dtemp_mu);
-  cv.it_cool = cv.cool_rate/(igm1*cv.press);
-  cv.it_heat = cv.heat_rate/(igm1*cv.press);
-  cv.it_cool_net = cv.it_cool - cv.it_heat;
-  
-  cv.crate_hii = 0.0*(cv1.crate_hii + cv2.crate_hii);
-  cv.drate_hii = 0.0*(cv1.drate_hii + cv2.drate_hii);
-  cv.crate_h2 = 0.0*(cv1.crate_h2 + cv2.crate_h2);
-  cv.drate_h2 = 0.0*(cv1.drate_h2 + cv2.drate_h2);
-  cv.it_hii = std::fabs(cv.x_hi*cv.crate_hii - cv.x_hii*cv.drate_hii);
-  cv.it_h2 = std::fabs(cv.x_hi*cv.crate_h2 - cv.x_h2*cv.drate_h2);
-
-  temp_ok = UpdateTemperature(cv, dt_sub);
-  UpdateChemistry(cv, dt_sub);
-  if (cv.len_shld > 0.0) UpdateRadiationField(cv);
-  
-  return 0;
-}
-
-
 int CoolingSolverTigress::DoOneSubstep(CoolVar& cv, Real& dt_sub) {
 
   // Following the practice adopated Anninos et al. (1997) and others,
@@ -478,7 +415,7 @@ int CoolingSolverTigress::DoOneSubstep(CoolVar& cv, Real& dt_sub) {
 
   const int nbad_dt_max = 3;
   int flag_bad_dt_sub = 0;
-  
+
   // Update dt_sub if 
   // cfl_cool_sub * MIN(|t_cool_net|, |t_chem|)
   // is smaller than the current estimate.
@@ -697,10 +634,8 @@ int CoolingSolverTigress::UpdateTemperature(CoolVar& cv, const Real dt) {
   Real deriv_term = -cv.df_dtemp_mu/(igm1*cv.den)*dt;
   Real dtemp_mu_heat_noderiv = cv.temp_mu*cv.it_heat*dt;
   Real dtemp_mu_cool_noderiv = cv.temp_mu*cv.it_cool*dt;
-  // cv.dtemp_mu_heat = dtemp_mu_heat_noderiv/(1.0 + deriv_term);
-  // cv.dtemp_mu_cool = dtemp_mu_cool_noderiv/(1.0 + deriv_term);
-  cv.dtemp_mu_heat = dtemp_mu_heat_noderiv;
-  cv.dtemp_mu_cool = dtemp_mu_cool_noderiv;
+  cv.dtemp_mu_heat = dtemp_mu_heat_noderiv/(1.0 + deriv_term);
+  cv.dtemp_mu_cool = dtemp_mu_cool_noderiv/(1.0 + deriv_term);
 
   Real temp_mu_next = cv.temp_mu + cv.dtemp_mu_heat - cv.dtemp_mu_cool;
 
