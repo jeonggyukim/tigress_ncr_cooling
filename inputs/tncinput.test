@@ -11,14 +11,14 @@ temp_mu_init = 1e3
 
 <shielding>
 nH0 = 100.0
-len_shld0 = 5.0
+len_shld0 = 0.0
 pow_idx_shld = -0.7
 col_shld_cr_cgs = 9.35e20
-
-<cooling>
-nsub_max = 50
-flag_dust_cool = 1
 
 <opacity>
 sigma_dust_pe0 = 1e-21
 sigma_dust_lw0 = 2e-21
+
+<cooling>
+nsub_max = 50
+flag_dust_cool = 1

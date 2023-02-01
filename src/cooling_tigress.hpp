@@ -1,6 +1,8 @@
 #ifndef MICROPHYSICS_COOLING_TIGRESS_HPP_
 #define MICROPHYSICS_COOLING_TIGRESS_HPP_
 
+#include <iostream>
+
 #include "defs.hpp"
 #include "units.hpp"
 
@@ -60,6 +62,8 @@ struct CoolVar {
   
 };
 
+void PrintCoolVar(CoolVar &cv);
+
 class CoolingSolverTigress {
  public:
   explicit CoolingSolverTigress(int flag_dust_cool,
@@ -105,6 +109,7 @@ class CoolingSolverTigress {
                          CoolVar& cv, const int i);
   
   void CoolingExplicitSubcycling(CoolVar& cv, const Real t_end);
+  int DoOneSubstepAlt(CoolVar& cv, Real& dt_sub);
   int DoOneSubstep(CoolVar& cv, Real& dt_sub);
   void CalculateCoolingRates(CoolVar& cv);
   void CalculateChemicalRates(CoolVar& cv);
