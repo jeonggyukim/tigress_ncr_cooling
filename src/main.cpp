@@ -116,6 +116,10 @@ int main(int argc, char *argv[]) {
     pinput->ParameterDump(std::cout);
     return(0);
   }
+
+  ChangeRunDir(prundir);
+  std::string filename = pinput->GetString("job","problem_id");
+  filename.append(".txt");
   
   Units *punit = new Units();
   punit->PrintCodeUnits();
@@ -123,7 +127,6 @@ int main(int argc, char *argv[]) {
   int ngrid = pinput->GetReal("problem", "ngrid");
   Real log_nH_min = pinput->GetReal("problem","log_nH_min");
   Real log_nH_max = pinput->GetReal("problem","log_nH_max");
-  int flag_dust_cool = pinput->GetInteger("cooling","flag_dust_cool");
   
   Real z_g = pinput->GetReal("problem","z_g");
   Real z_d = pinput->GetReal("problem","z_d");
@@ -132,8 +135,8 @@ int main(int argc, char *argv[]) {
   
   Real sigma_dust_pe0 = pinput->GetReal("opacity","sigma_dust_pe0");
   Real sigma_dust_lw0 = pinput->GetReal("opacity","sigma_dust_lw0");
-  Real sigma_dust_pe_cgs = sigma_dust_pe0*z_d;
-  Real sigma_dust_lw_cgs = sigma_dust_lw0*z_d;
+  Real sigma_dust_pe = sigma_dust_pe0*z_d;
+  Real sigma_dust_lw = sigma_dust_lw0*z_d;
 
   Real nH0 = pinput->GetReal("shielding","nH0");
   Real len_shld0 = pinput->GetReal("shielding","len_shld0");;
@@ -162,25 +165,15 @@ int main(int argc, char *argv[]) {
   Real *chi_ci =  new Real[ngrid]();
   Real *xi_cr =  new Real[ngrid]();
   Real *len_shld =  new Real[ngrid]();
-  
-  // int w = 10;
-  // std::cout << "|" << std::setw(w) << "nH"
-  //           << "|" << std::setw(w) << "T1"
-  //           << "|" << std::setw(w) << "pok"
-  //           << "|" << std::setw(w) << "xH2"
-  //           << "|" << std::setw(w) << "xHII"
-  //           << "|" << std::setw(w) << "xe"
-  //           << "|" << std::endl;
-  // std::cout << std::setprecision(5) << std::left;
-  
+    
   // Set initial data
   for (int i=0; i<ngrid; ++i) {
     len_shld[i] = len_shld0*std::pow(nH[i]/nH0, pow_idx_shld);
     col_shld_cgs = nH[i]*len_shld[i]*punit->Length;
-    chi_pe[i] = chi0*exp(-col_shld_cgs*sigma_dust_pe_cgs);
-    chi_lw[i] = chi0*exp(-col_shld_cgs*sigma_dust_lw_cgs);
-    chi_h2[i] = chi0*exp(-col_shld_cgs*sigma_dust_lw_cgs);
-    chi_ci[i] = chi0*exp(-col_shld_cgs*sigma_dust_lw_cgs);
+    chi_pe[i] = chi0*exp(-col_shld_cgs*sigma_dust_pe);
+    chi_lw[i] = chi0*exp(-col_shld_cgs*sigma_dust_lw);
+    chi_h2[i] = chi0*exp(-col_shld_cgs*sigma_dust_lw);
+    chi_ci[i] = chi0*exp(-col_shld_cgs*sigma_dust_lw);
 
     xi_cr[i] = xi_cr0;
     if (col_shld_cgs > col_shld_cr_cgs) {
@@ -198,22 +191,9 @@ int main(int argc, char *argv[]) {
     x_h2[i] = x_h2_;
     x_hii[i] = x_hii_;
     x_e[i] = x_e_;
-
-    // std::cout << " "
-    //           << nH[i] << " "
-    //           << temp_mu << " "
-    //           << press[i]*punit->Pressure/Constants::kB << " "
-    //           << x_h2[i] << " "
-    //           << x_hii[i] << " "
-    //           << x_e[i] << " "
-    //           << std::endl;
   }
 
-  CoolingSolverTigress *pcool = new CoolingSolverTigress(flag_dust_cool,
-                                                         sigma_dust_pe0,
-                                                         sigma_dust_lw0,
-                                                         punit);
-
+  CoolingSolverTigress *pcool = new CoolingSolverTigress(pinput, punit);
   
   pcool->OperatorSplitSolver1D(nH, press,
                                x_h2, x_hii, x_e,
@@ -223,21 +203,6 @@ int main(int argc, char *argv[]) {
                                chi0,
                                z_g, z_d,
                                0, ngrid, t_end);
-
-  // for (int i=0; i<n; ++i) {
-  //   std::cout << " "
-  //             << nH[i] << " "
-  //             << press[i]/nH[i]*punit->Temperature_mu << " "
-  //             << press[i]*punit->Pressure/Constants::kB << " "
-  //             << x_h2[i] << " "
-  //             << x_hii[i] << " "
-  //             << x_e[i] << " "
-  //             << std::endl;
-  // }
-
-  ChangeRunDir(prundir);
-  std::string filename = pinput->GetString("job","problem_id");
-  filename.append(".txt");
 
   WriteData(filename,
             nH, press,

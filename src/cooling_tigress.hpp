@@ -3,16 +3,9 @@
 
 #include "defs.hpp"
 #include "units.hpp"
+#include "parameter_input.hpp"
 
-// class MeshBlock
-
-// //! array indices for conserved: density, momemtum, total energy
-// enum ConsIndex {IDN=0, IM1=1, IM2=2, IM3=3, IEN=4};
-
-// //! array indices for 1D primitives: velocity, transverse components of field
-// enum PrimIndex {IVX=1, IVY=2, IVZ=3, IPR=4, IBY=(NHYDRO), IBZ=((NHYDRO)+1)};
-
-// Cooling-related data holder
+// Cooling-related POD data holder
 struct CoolVar {
 
   Real z_g, z_d;
@@ -62,10 +55,7 @@ struct CoolVar {
 
 class CoolingSolverTigress {
  public:
-  explicit CoolingSolverTigress(int flag_dust_cool,
-                                Real sigma_dust_pe0,
-                                Real sigma_dust_lw0,
-                                Units *punit);
+  explicit CoolingSolverTigress(ParameterInput *pin, Units *punit);
   ~CoolingSolverTigress();
   
   //void OperatorSplitSolver(Real dt);
@@ -80,10 +70,7 @@ class CoolingSolverTigress {
                              int il, int iu, const Real dt);
   
   Units *punit;
-  int flag_dust_cool;
-  Real cfl_cool_sub;
-  Real muH;
-  Real sigma_dust_pe0, sigma_dust_lw0;
+  
  private:
   // void SetupCoolingVariables(MeshBlock *pmb, CoolVar& cv,
   //                            const int k, const int j, const int i);
@@ -112,9 +99,18 @@ class CoolingSolverTigress {
   void UpdateChemistry(CoolVar& cv, const Real dt);
   void UpdateRadiationField(CoolVar& cv);
 
-  int nsub_max_;
-  Real code_den_to_nH_;
+  const int flag_cool_dust_;
+  const int flag_cool_hyd_cie_;
+  const Real cfl_cool_sub_;
+  const Real muH_;
+  const Real sigma_dust_pe0_, sigma_dust_lw0_;
+  const int nsub_max_;
+  const Real code_den_to_nH_;
+  const Real temp_hot0_, temp_hot1_;
   
+  // relative change in temperature (used for derivative calculation)
+  const Real dlntemp_ = 0.02;
+  const Real gm1_, igm1_;
 };
 
 void HIIRates(const Real nH, const Real T, const Real xHI,

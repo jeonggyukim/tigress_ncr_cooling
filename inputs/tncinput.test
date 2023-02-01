@@ -1,3 +1,6 @@
+<job>
+problem_id = default
+
 <problem>
 ngrid = 161
 log_nH_min = -2.0
@@ -16,8 +19,11 @@ pow_idx_shld = -0.7
 col_shld_cr_cgs = 9.35e20
 
 <cooling>
+flag_cool_dust = 1
 nsub_max = 50
-flag_dust_cool = 1
+cfl_cool_sub = 0.1
+temp_hot0 = 2.0e4
+temp_hot1 = 3.5e4
 
 <opacity>
 sigma_dust_pe0 = 1e-21
