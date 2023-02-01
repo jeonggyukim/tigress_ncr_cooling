@@ -48,6 +48,7 @@ void WriteData(std::string filename,
                Real *chi_pe, Real *chi_lw,
                Real *chi_h2, Real *chi_ci,
                Real *xi_cr,
+               Real *cool_per_hyd, Real *heat_per_hyd,
                const int n) {
 
   const int prec = 5;
@@ -66,6 +67,8 @@ void WriteData(std::string filename,
      << std::setw(w) << "chi_h2 "
      << std::setw(w) << "chi_ci "
      << std::setw(w) << "xi_cr "
+     << std::setw(w) << "nLambda "
+     << std::setw(w) << "Gamma "
      << std::endl;
   
   // std::cout << std::setprecision(5) << std::left;
@@ -82,6 +85,8 @@ void WriteData(std::string filename,
     PrintElement(os, chi_h2[i], w);
     PrintElement(os, chi_ci[i], w);
     PrintElement(os, xi_cr[i], w);
+    PrintElement(os, cool_per_hyd[i], w);
+    PrintElement(os, heat_per_hyd[i], w);
     os << std::endl;
   }
 

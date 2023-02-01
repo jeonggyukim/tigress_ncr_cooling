@@ -69,6 +69,7 @@ void CoolingSolverTigress::OperatorSplitSolver1D(Real *den, Real *press,
                                                  Real *chi_pe, Real *chi_lw,
                                                  Real *chi_h2, Real *chi_ci,
                                                  Real *xi_cr, Real *len_shld,
+                                                 Real *cool_per_hyd, Real *heat_per_hyd,
                                                  const Real chi0,
                                                  const Real z_g, const Real z_d,
                                                  int il, int iu, const Real dt) {
@@ -89,6 +90,7 @@ void CoolingSolverTigress::OperatorSplitSolver1D(Real *den, Real *press,
     UpdateVariables1D(den, press,
                       x_h2, x_hii, x_e,
                       chi_h2, chi_ci,
+                      cool_per_hyd, heat_per_hyd,
                       cv, i);
   }
   
@@ -780,6 +782,7 @@ void CoolingSolverTigress::UpdateRadiationField(CoolVar& cv) {
 void CoolingSolverTigress::UpdateVariables1D(Real *den, Real *press,
                                              Real *x_h2, Real *x_hii, Real *x_e,
                                              Real *chi_h2, Real *chi_ci,
+                                             Real *cool_per_hyd, Real *heat_per_hyd,
                                              CoolVar& cv, const int i) {
   
   //Real dt_mhd = pmb->pmy_mesh->dt;
@@ -814,6 +817,9 @@ void CoolingSolverTigress::UpdateVariables1D(Real *den, Real *press,
   x_e[i] = cv.x_e;
   chi_h2[i] = cv.chi_h2;
   chi_ci[i] = cv.chi_ci;
+
+  cool_per_hyd[i] = cv.cool_rate/cv.nH*punit->EnergyDensity/punit->Time;
+  heat_per_hyd[i] = cv.heat_rate/cv.nH*punit->EnergyDensity/punit->Time;
   
   return;
 

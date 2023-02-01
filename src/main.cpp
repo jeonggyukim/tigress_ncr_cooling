@@ -165,7 +165,10 @@ int main(int argc, char *argv[]) {
   Real *chi_ci =  new Real[ngrid]();
   Real *xi_cr =  new Real[ngrid]();
   Real *len_shld =  new Real[ngrid]();
-    
+  // Some output
+  Real *cool_per_hyd = new Real[ngrid]();
+  Real *heat_per_hyd = new Real[ngrid]();
+
   // Set initial data
   for (int i=0; i<ngrid; ++i) {
     len_shld[i] = len_shld0*std::pow(nH[i]/nH0, pow_idx_shld);
@@ -200,6 +203,7 @@ int main(int argc, char *argv[]) {
                                chi_pe, chi_lw,
                                chi_h2, chi_ci,
                                xi_cr, len_shld,
+                               cool_per_hyd, heat_per_hyd,
                                chi0,
                                z_g, z_d,
                                0, ngrid, t_end);
@@ -209,6 +213,7 @@ int main(int argc, char *argv[]) {
             x_h2, x_hii, x_e,
             chi_pe, chi_lw, chi_h2, chi_ci,
             xi_cr,
+            cool_per_hyd, heat_per_hyd,
             ngrid);
 
   delete[] nH;

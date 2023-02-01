@@ -65,6 +65,7 @@ class CoolingSolverTigress {
                              Real *chi_pe, Real *chi_lw,
                              Real *chi_h2, Real *chi_ci,
                              Real *xi_cr, Real *len_shld,
+                             Real *cool_per_hyd, Real *heat_per_hyd,
                              const Real chi0,
                              const Real z_g, const Real z_d,
                              int il, int iu, const Real dt);
@@ -89,6 +90,7 @@ class CoolingSolverTigress {
   void UpdateVariables1D(Real *den, Real *press,
                          Real *x_h2, Real *x_hii, Real *x_e,
                          Real *chi_h2, Real *chi_ci,
+                         Real *cool_per_hyd, Real *heat_per_hyd,
                          CoolVar& cv, const int i);
   
   void CoolingExplicitSubcycling(CoolVar& cv, const Real t_end);

@@ -18,6 +18,7 @@ void WriteData(std::string filename,
                Real *chi_pe, Real *chi_lw,
                Real *chi_h2, Real *chi_ci,
                Real *xi_cr,
+               Real *cool_per_hyd, Real *heat_per_hyd,
                const int n);
 
 
