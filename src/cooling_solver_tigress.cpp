@@ -256,8 +256,8 @@ void CoolingSolverTigress::SetupVariables1D(Real *den, Real *press,
     // this assumption was adopted in Athena-TIGRESS code
     Real tau_pe_eff = -std::log(chi_pe[i]/chi0);
     Real heating_dust_min =
-      ((cv.z_g*sigma_dust_pe0_)*u_rad_pe_isrf_cgs +
-       (cv.z_g*sigma_dust_lw0_)*u_rad_lw_isrf_cgs)*exp(-tau_pe_eff/1.87);
+      ((cv.z_d*sigma_dust_pe0_)*u_rad_pe_isrf_cgs +
+       (cv.z_d*sigma_dust_lw0_)*u_rad_lw_isrf_cgs)*exp(-tau_pe_eff/1.87);
     cv.heating_dust_uv += heating_dust_min;
     cv.heating_dust_uv *= Constants::c;
     cv.temp_dust = temp_dust0;
