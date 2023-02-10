@@ -5,7 +5,7 @@ import re
 import subprocess
 import argparse
 import shutil
-import os.path as osp
+import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--shld', action='store_true', default=False,
@@ -18,6 +18,9 @@ locals().update(args)
 
 if __name__ == '__main__':
 
+    if not os.path.exists(rundir):
+        os.makedirs(rundir)
+        
     nomake = True
     tncinput_template = 'template.tncinput'
     
@@ -69,9 +72,9 @@ if __name__ == '__main__':
                 f.write(tmp)
 
             # Run simulations
-            shutil.move(tncinput_out, osp.join(rundir, tncinput_out))
+            shutil.move(tncinput_out, os.path.join(rundir, tncinput_out))
             cmd = ['../bin/tigress_ncr_cooling',
-                   '-i', osp.join(rundir, tncinput_out),
+                   '-i', os.path.join(rundir, tncinput_out),
                    '-d', rundir]
 
             out = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
