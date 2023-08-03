@@ -10,4 +10,4 @@ cd inputs
 python run_simulations.py
 ```
 
-The output files will be generated in bin directory.
+You may need to manually adjust input parameters (e.g., FUV, CR rate, metallicity, dust abundance) in `run_simulations.py`.
