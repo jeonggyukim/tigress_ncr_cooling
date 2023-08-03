@@ -20,20 +20,28 @@ if __name__ == '__main__':
 
     if not os.path.exists(rundir):
         os.makedirs(rundir)
-        
+
     nomake = True
     tncinput_template = 'template.tncinput'
-    
+
     t_end_Myr = 1e3
+
+    xi_cr0_def = 2e-16
 
     # Log gas metallicity, dust abundance, and radiation
     z_g = np.arange(-3.0,1.0,0.5)
     z_d = z_g
-    # Make radiation and CR scale together
-    chi0 = np.arange(-2.0,3.0,1.0)
-    xi_cr0 = np.arange(-2.0,3.0,1.0)
-    xi_cr0_def = 2e-16
-    
+
+    suite = 'fiducial'
+    if suite == 'fiducial':
+        # Case A. Make radiation and CR scale together
+        chi0 = np.arange(-2.0,3.0,1.0)
+        xi_cr0 = np.arange(-2.0,3.0,1.0)
+    elif suite == 'var_cr':
+        # Case B. Fix radiation field but change only CRs
+        xi_cr0 = np.arange(-2.0,1.0,0.25)
+        chi0 = np.repeat(0.0,len(xi_cr0))
+
     if shld:
         len_shld0 = 5.0
         flag_cool_dust = 1
@@ -48,8 +56,13 @@ if __name__ == '__main__':
     for z_g_,z_d_ in zip(z_g,z_d):
         for chi0_,xi_cr0_ in zip(chi0,xi_cr0):
             print('z_g,z_d,chi0,xi_cr0',z_g_,z_d_,chi0_,xi_cr0_)
-            problem_id = '{0:s}_zg{1:.1f}_zd{2:.1f}_chi{3:.1f}'.format(
-                shld_str, z_g_, z_d_, chi0_)
+            if suite == 'fiducial':
+                problem_id = '{0:s}_zg{1:.1f}_zd{2:.1f}_chi{3:.1f}'.format(
+                    shld_str, z_g_, z_d_, chi0_)
+            elif suite == 'var_cr':
+                problem_id = '{0:s}_zg{1:.1f}_zd{2:.1f}_xi{3:.2f}'.format(
+                    shld_str, z_g_, z_d_, xi_cr0_)
+
             tncinput_out = 'tncinput.{:s}'.format(problem_id)
 
             subs = dict()
@@ -80,4 +93,3 @@ if __name__ == '__main__':
             out = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
             print(out.decode('unicode_escape'))
             print('')
-            
