@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser(description=description)
 
 cxx_choices = [
     'g++',
-    'g++-12',
+    'g++-13',
     'g++-simd',
     'icpx',
     'icpc',
@@ -54,8 +54,8 @@ if args['cxx'] == 'g++':
     makefile_options['COMPILER_FLAGS'] = '-O3 -std=c++11'
     makefile_options['LINKER_FLAGS'] = ''
     makefile_options['LIBRARY_FLAGS'] = ''
-elif args['cxx'] == 'g++-12':
-    makefile_options['COMPILER_COMMAND'] = 'g++-12'
+elif args['cxx'] == 'g++-13':
+    makefile_options['COMPILER_COMMAND'] = 'g++-13'
     makefile_options['PREPROCESSOR_FLAGS'] = ''
     makefile_options['COMPILER_FLAGS'] = '-O3 -std=c++11 -I/opt/homebrew/include' # -fopenmp'
     makefile_options['LINKER_FLAGS'] = ''
