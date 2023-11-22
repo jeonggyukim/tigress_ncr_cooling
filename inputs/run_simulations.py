@@ -29,7 +29,8 @@ if __name__ == '__main__':
     xi_cr0_def = 2e-16
 
     # Log gas metallicity, dust abundance, and radiation
-    z_g = np.arange(-3.0,1.0,0.5)
+    # z_g = np.arange(-3.0,1.0,0.5)
+    z_g = np.array([-2.0,-1.0,0.0, np.log10(3.0)])
     z_d = z_g
 
     suite = 'fiducial'
@@ -57,7 +58,7 @@ if __name__ == '__main__':
         for chi0_,xi_cr0_ in zip(chi0,xi_cr0):
             print('z_g,z_d,chi0,xi_cr0',z_g_,z_d_,chi0_,xi_cr0_)
             if suite == 'fiducial':
-                problem_id = '{0:s}_zg{1:.1f}_zd{2:.1f}_chi{3:.1f}'.format(
+                problem_id = '{0:s}_zg{1:.2f}_zd{2:.2f}_chi{3:.1f}'.format(
                     shld_str, z_g_, z_d_, chi0_)
             elif suite == 'var_cr':
                 problem_id = '{0:s}_zg{1:.1f}_zd{2:.1f}_xi{3:.2f}'.format(
