@@ -8,6 +8,7 @@
 // C headers
 
 // C++ headers
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <iomanip>

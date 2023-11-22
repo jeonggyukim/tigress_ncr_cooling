@@ -73,7 +73,7 @@ void CoolingSolverTigress::OperatorSplitSolver1D(Real *den, Real *press,
                                                  const Real chi0,
                                                  const Real z_g, const Real z_d,
                                                  int il, int iu, const Real dt) {
-  
+
   // Real dt = pmb->pmy_mesh->dt;
 
 #pragma omp simd
@@ -93,7 +93,7 @@ void CoolingSolverTigress::OperatorSplitSolver1D(Real *den, Real *press,
                       cool_per_hyd, heat_per_hyd,
                       cv, i);
   }
-  
+
   return;
 }
 
@@ -125,7 +125,7 @@ void CoolingSolverTigress::OperatorSplitSolver1D(Real *den, Real *press,
 //   // int kl = 0;
 //   // int ku = 0;
 //   // Real dt = 0.1;
-  
+
 //   CoolVar cv;
 
 
@@ -137,7 +137,7 @@ void CoolingSolverTigress::OperatorSplitSolver1D(Real *den, Real *press,
 //       for (int i=il; i<=iu; ++i) {
 //         SetupVariables(pmb, cv, k, j, i);
 //         CoolingExplicitSubcycling(cv, dt);
-//         UpdateHydroVariables(pmb, cv, k, j, i);        
+//         UpdateHydroVariables(pmb, cv, k, j, i);
 //       }
 //     }
 //   }
@@ -153,10 +153,10 @@ void CoolingSolverTigress::SetupVariables1D(Real *den, Real *press,
                                             const Real z_g, const Real z_d,
                                             CoolVar& cv,
                                             const int i) {
-  
+
   Real xi_ph_hi = 0.0;
   Real xi_ph_h2 = 0.0;
-  
+
   // metallicity and dust abundance
   cv.z_g = z_g;
   cv.z_d = z_d;
@@ -170,7 +170,7 @@ void CoolingSolverTigress::SetupVariables1D(Real *den, Real *press,
   Real x_e_ = x_e[i];
   Real x_e_max_ = 1.20061997798625 + 0.00961998*(cv.z_g - 1.0);
   Real x_hi_;
-    
+
   // Store density, non-thermal energy, and initial pressure
   cv.den = den[i];
   cv.nH = cv.den*code_den_to_nH_;
@@ -199,7 +199,7 @@ void CoolingSolverTigress::SetupVariables1D(Real *den, Real *press,
     x_h2_ = std::min(1.0 - x_hii_, x_h2_);
   }
   x_hi_ = std::max(TINY_NUMBER, 1.0 - x_hii_ - 2.0*x_h2_);
-  
+
   x_e_ = std::max(TINY_NUMBER, x_e_);
   x_e_ = std::min(x_e_max_, x_e_);
 
@@ -224,7 +224,7 @@ void CoolingSolverTigress::SetupVariables1D(Real *den, Real *press,
   cv.mu = muH_/(1.1 + cv.x_e - cv.x_h2);
   cv.temp  = cv.mu*cv.temp_mu;
   cv.temp_ = cv.temp*(1.0 + dlntemp_);
-  
+
   // SetRadiationVariables(pmb, cv);
 
   // Note that chi_fuv is the normalized intensity in the FUV (PE+LW) band used
@@ -235,7 +235,7 @@ void CoolingSolverTigress::SetupVariables1D(Real *den, Real *press,
   cv.chi_h2 = chi_h2[i];
   cv.chi_ci = chi_ci[i];
   cv.chi_co = chi_lw[i];
-  
+
   // SetCosmicRayVariables(pmb, cv);
   cv.xi_cr = xi_cr[i];
   cv.len_shld = len_shld[i];
@@ -243,14 +243,14 @@ void CoolingSolverTigress::SetupVariables1D(Real *den, Real *press,
   cv.xi_ph_hi = xi_ph_hi;
   cv.xi_ph_h2 = xi_ph_h2;
   cv.xi_diss_h2 = chi_h2[i]*xi_diss_h2_isrf;
-  
+
   cv.dvdr = dvdr;
 
   if (flag_cool_dust_) {
     // TODO add LyC
     cv.heating_dust_uv =
-      (cv.z_g*sigma_dust_pe0_)*(chi_pe[i]*u_rad_pe_isrf_cgs) + 
-      (cv.z_g*sigma_dust_lw0_)*(chi_lw[i]*u_rad_lw_isrf_cgs);
+      (cv.z_d*sigma_dust_pe0_)*(chi_pe[i]*u_rad_pe_isrf_cgs) +
+      (cv.z_d*sigma_dust_lw0_)*(chi_lw[i]*u_rad_lw_isrf_cgs);
     // Additional heating by other (e.g., optical) photons
     // CAUTION: minimum heating is assumed to be ISRF (not proportional to chi0)
     // this assumption was adopted in Athena-TIGRESS code
@@ -262,7 +262,7 @@ void CoolingSolverTigress::SetupVariables1D(Real *den, Real *press,
     cv.heating_dust_uv *= Constants::c;
     cv.temp_dust = temp_dust0;
   }
-  
+
   return;
 }
 
@@ -272,7 +272,7 @@ void CoolingSolverTigress::SetupVariables1D(Real *den, Real *press,
 
 //   Real z_g = 1.0;
 //   Real z_d = 1.0;
-  
+
 //   Real chi_pe = 1.0;
 //   Real chi_ci = 1.0;
 //   Real chi_co = 1.0;
@@ -280,7 +280,7 @@ void CoolingSolverTigress::SetupVariables1D(Real *den, Real *press,
 //   Real xi_ph_hi = 0.0;
 //   Real xi_ph_h2 = 0.0;
 //   Real xi_cr = 2.0e-16;
-  
+
 //   Real w_d  = pmb->phydro->w(IDN,k,j,i);
 //   Real w_p  = pmb->phydro->w(IPR,k,j,i);
 //   Real u_e  = pmb->phydro->u(IEN,k,j,i);
@@ -290,11 +290,11 @@ void CoolingSolverTigress::SetupVariables1D(Real *den, Real *press,
 //   Real x_e = pmb->pscalars->r(2,k,j,i);
 //   Real x_e_max = 1.20061997798625 + 0.00961998*(z_g - 1.0);
 //   Real x_hi;
-  
+
 //   // metallicity and dust abundance
 //   cv.z_g = z_g;
 //   cv.z_d = z_d;
-  
+
 //   // Store density, non-thermal energy, and initial pressure
 //   cv.den = w_d;
 //   cv.nH = cv.den*code_den_to_nH_;
@@ -323,7 +323,7 @@ void CoolingSolverTigress::SetupVariables1D(Real *den, Real *press,
 //     x_h2 = std::min(1.0 - x_hii, x_h2);
 //   }
 //   x_hi = std::max(TINY_NUMBER, 1.0 - x_hii - 2.0*x_h2);
-  
+
 //   x_e = std::max(TINY_NUMBER, x_e);
 //   x_e = std::min(x_e_max, x_e);
 
@@ -353,7 +353,7 @@ void CoolingSolverTigress::SetupVariables1D(Real *den, Real *press,
 //   cv.chi_pe = chi_pe;
 //   cv.chi_ci = chi_ci;
 //   cv.chi_co = chi_co;
-  
+
 //   cv.xi_ph_hi = xi_ph_hi;
 //   cv.xi_ph_h2 = xi_ph_h2;
 //   cv.xi_diss_h2 = xi_diss_h2;
@@ -370,7 +370,7 @@ void CoolingSolverTigress::CoolingExplicitSubcycling(CoolVar& cv, const Real t_e
   int nbad_dt_max = 3;
   int nsub = 0;
   Real t_done = 0.0, t_left = t_end, dt_sub;
-  
+
   while ((nsub < nsub_max_) && (t_done < t_end)) {
     dt_sub = std::max(0.0, t_left);
     flag_bad_dt_sub = DoOneSubstep(cv, dt_sub);
@@ -384,10 +384,10 @@ void CoolingSolverTigress::CoolingExplicitSubcycling(CoolVar& cv, const Real t_e
       // output_log_too_many_bad_dt(flag_bad_dt_sub);
     }
   }
-  
+
   std::cout << "nH " << cv.nH << " nsub " << nsub
             << " nbad_dt " << flag_bad_dt_sub << std::endl;
-  
+
   return;
 }
 
@@ -402,7 +402,7 @@ int CoolingSolverTigress::DoOneSubstep(CoolVar& cv, Real& dt_sub) {
   const int nbad_dt_max = 3;
   int flag_bad_dt_sub = 0;
 
-  // Update dt_sub if 
+  // Update dt_sub if
   // cfl_cool_sub * MIN(|t_cool_net|, |t_chem|)
   // is smaller than the current estimate.
   // cfl_cool_sub is usually set to 0.1 (10% rule)
@@ -413,7 +413,7 @@ int CoolingSolverTigress::DoOneSubstep(CoolVar& cv, Real& dt_sub) {
   if (cv.it_h2 != HUGE_NUMBER)
     // Skipped for hot gas
     dt_sub = std::min(dt_sub, cfl_cool_sub_/cv.it_h2);
-  
+
   while (1) {
     int temp_ok = UpdateTemperature(cv, dt_sub);
     if (temp_ok) {
@@ -441,7 +441,7 @@ void CoolingSolverTigress::CalculateCoolingRates(CoolVar& cv) {
 
   // minimum heating rate coefficient [erg/s/H]
   const Real heat_min = 1.0e-35;
-  
+
   Real cool_hyd = 0.0, cool_hyd_ = 0.0;
   Real cool_other = 0.0, cool_other_ = 0.0;
   Real cool_hyd_tbl = 0.0, cool_hyd_tbl_ = 0.0;
@@ -449,7 +449,7 @@ void CoolingSolverTigress::CalculateCoolingRates(CoolVar& cv) {
   Real cool_metal_tbl = 0.0, cool_metal_tbl_ = 0.0;
   Real cool = 0.0, cool_= 0.0;
   Real heat = 0.0, heat_= 0.0;
-  
+
   // // Variables related to dust cooling
   // Real Tdust_in = pCVar->Tdust_in;
   // Real heating_dustUV = pCVar->heating_dustUV;
@@ -463,12 +463,12 @@ void CoolingSolverTigress::CalculateCoolingRates(CoolVar& cv) {
     cool_hyd  += CoolingHI(cv.x_e, cv.x_hi, cv.nH, cv.temp );
     cool_hyd_ += CoolingHI(cv.x_e, cv.x_hi, cv.nH, cv.temp_);
   }
-  
+
   if (cv.x_hii > x_hii_cut) {
     cool_hyd  += CoolingHII(cv.x_e, cv.x_hii, cv.nH, cv.temp );
     cool_hyd_ += CoolingHII(cv.x_e, cv.x_hii, cv.nH, cv.temp_);
   }
-  
+
   if ((cv.x_h2 > x_h2_cut) && (cv.temp < temp_hot1_)) {
     if (flag_h2_cooling) {
       cool_hyd  += CoolingH2(cv.x_h2, cv.x_hi, cv.nH, cv.temp );
@@ -494,11 +494,11 @@ void CoolingSolverTigress::CalculateCoolingRates(CoolVar& cv) {
                           cv.chi_fuv, cv.xi_ph_h2, cv.xi_diss_h2, cv.xi_ph_hi);
     heat_ += HeatingOther(cv.x_e, cv.x_hi, cv.x_h2, cv.nH, cv.temp_, cv.z_d, cv.xi_cr,
                           cv.chi_fuv, cv.xi_ph_h2, cv.xi_diss_h2, cv.xi_ph_hi);
-    
+
     // To save the cost, temp_dust_eq and associated cooling is computed only if temp <
     // temp_hot1. This implies hat temp_dust_eq in hot gas is from previous calculations
     // and is not used.
-    
+
     if (flag_cool_dust_) {
       cool_dust_net  = get_cooling_dust_net(cv.temp_dust, cv.nH, cv.temp , cv.z_d,
                                             cv.heating_dust_uv, &temp_dust_eq );
@@ -530,7 +530,7 @@ void CoolingSolverTigress::CalculateCoolingRates(CoolVar& cv) {
       cool_hyd_tbl_ = cv.nH*Lambda_H_tbl(cv.temp_);
     }
   }
-  
+
   // Non-equilibrium hydrogen cooling
   cool  = cool_hyd ;
   cool_ = cool_hyd_;
@@ -566,7 +566,7 @@ void CoolingSolverTigress::CalculateCoolingRates(CoolVar& cv) {
     cool  += cool_other ;
     cool_ += cool_other_;
   }
-  
+
   // Cooling and heating rates per unit volume in code unit
   cv.cool_rate = (cv.nH*cool)*(punit->Time/punit->EnergyDensity);
   cv.heat_rate = (cv.nH*heat)*(punit->Time/punit->EnergyDensity);
@@ -575,7 +575,7 @@ void CoolingSolverTigress::CalculateCoolingRates(CoolVar& cv) {
   cv.df_dtemp_mu = cv.mu*cv.nH*((heat_ - heat) -
                                 (cool_ - cool))/(cv.temp_ - cv.temp);
   cv.df_dtemp_mu *= (punit->Time/punit->EnergyDensity)*punit->Temperature_mu;
-  
+
   // inverse of cooling/heating time in code unit
   cv.it_cool = cv.cool_rate/(igm1_*cv.press);
   cv.it_heat = cv.heat_rate/(igm1_*cv.press);
@@ -595,7 +595,7 @@ void CoolingSolverTigress::CalculateChemicalRates(CoolVar& cv) {
   cv.drate_hii *= punit->Time;
   cv.it_hii = std::fabs(cv.x_hi*cv.crate_hii - cv.x_hii*cv.drate_hii);
 
-  // molecular hydrogen  
+  // molecular hydrogen
   if (cv.temp >= temp_hot1_) {
     // Do not consider chemical timescale in substepping
     cv.crate_h2 = 0.0;
@@ -609,12 +609,12 @@ void CoolingSolverTigress::CalculateChemicalRates(CoolVar& cv) {
     cv.drate_h2 *= punit->Time;
     cv.it_h2 = std::fabs(cv.x_hi*cv.crate_h2 - cv.x_h2*cv.drate_h2);
   }
-  
+
   return;
 }
 
 int CoolingSolverTigress::UpdateTemperature(CoolVar& cv, const Real dt) {
-  
+
   // In Eq. 59 in Kim, J.-G. et al. (2023) The term involving the derivative
   // reduces to -(gamma-1)*mH*(Delta t)/(rho*kB)*(dH/dT_mu)
   Real deriv_term = -cv.df_dtemp_mu/(igm1_*cv.den)*dt;
@@ -642,7 +642,7 @@ int CoolingSolverTigress::UpdateTemperature(CoolVar& cv, const Real dt) {
       cv.press = press_next;
     }
   }
-  
+
   // Accumulate pressure change by cooling and heating separately
   cv.dpress_cool += cv.den*cv.dtemp_mu_cool/punit->Temperature_mu;
   cv.dpress_heat += cv.den*cv.dtemp_mu_heat/punit->Temperature_mu;
@@ -652,7 +652,7 @@ int CoolingSolverTigress::UpdateTemperature(CoolVar& cv, const Real dt) {
   cv.mu = muH_/(1.1 + cv.x_e - cv.x_h2);
   cv.temp  = cv.mu*cv.temp_mu;
   cv.temp_ = cv.temp*(1.0 + dlntemp_);
-  
+
   return 1;
 }
 
@@ -713,18 +713,18 @@ void CoolingSolverTigress::UpdateChemistry(CoolVar& cv, const Real dt) {
   cv.x_e = CalculateFreeElectron(cv.x_e, cv.x_hi, cv.x_h2, cv.x_hii,
                                  cv.nH, cv.temp, cv.z_d, cv.z_g, cv.xi_cr,
                                  cv.chi_fuv, cv.chi_ci, &x_cii);
-  
+
   Real x_oii = cv.x_hii*xOstd*cv.z_g;
   Real x_co = CalculateCOAbundance(cv.x_h2, x_cii, x_oii, cv.nH, cv.z_d, cv.z_g,
                                    cv.xi_cr, cv.chi_co);
   cv.x_ci = std::max(xCstd*cv.z_g - x_cii - x_co, TINY_NUMBER);
-  
+
   return;
 }
 
 void CoolingSolverTigress::UpdateRadiationField(CoolVar& cv) {
 
-  
+
   // Update H2-dissociating, CI-ionizing radiation fields based on updated abundances
   Real col_shld_h2_cgs = 0.5*(cv.nH*cv.x_h2)*(cv.len_shld*punit->Length);
 
@@ -738,11 +738,11 @@ void CoolingSolverTigress::UpdateRadiationField(CoolVar& cv) {
   Real tau_ci = 1.6e-17*col_shld_ci_cgs;
   Real r_h2 = x*1.4e-7;
   Real fshld_ci = exp(-tau_ci)*exp(-r_h2)/(1.0 + r_h2);
-  
+
   cv.chi_h2 = cv.chi_lw*fshld_h2;
   cv.xi_diss_h2 = cv.chi_h2*xi_diss_h2_isrf;
   cv.chi_ci = cv.chi_lw*fshld_ci;
-  
+
 }
 
 // void CoolingSolverTigress::UpdateHydroVariables(MeshBlock *pmb, CoolVar& cv,
@@ -760,7 +760,7 @@ void CoolingSolverTigress::UpdateRadiationField(CoolVar& cv) {
 
 //   // Save pressure difference due to cooling
 //   // Real dpress = cv.press - cv.press_before;
-  
+
 //   // Apply presure floor after solving cooling
 //   if (cv.press < cv.press_floor)
 //     cv.dpress_floor += cv.press_floor - cv.press;
@@ -784,10 +784,10 @@ void CoolingSolverTigress::UpdateVariables1D(Real *den, Real *press,
                                              Real *chi_h2, Real *chi_ci,
                                              Real *cool_per_hyd, Real *heat_per_hyd,
                                              CoolVar& cv, const int i) {
-  
+
   //Real dt_mhd = pmb->pmy_mesh->dt;
   //  Real dt_mhd = 1.0;
-  
+
   // Real igm1_ = 1.0/(gamma - 1.0);
   // Real igm1_idt_mhd = 1/(gamma - 1.0)/dt_mhd;
 
@@ -797,7 +797,7 @@ void CoolingSolverTigress::UpdateVariables1D(Real *den, Real *press,
 
   // Save pressure difference due to cooling
   // Real dpress = cv.press - cv.press_before;
-  
+
   // Apply presure floor after solving cooling
   if (cv.press < cv.press_floor)
     cv.dpress_floor += cv.press_floor - cv.press;
@@ -820,7 +820,7 @@ void CoolingSolverTigress::UpdateVariables1D(Real *den, Real *press,
 
   cool_per_hyd[i] = cv.cool_rate/cv.nH*punit->EnergyDensity/punit->Time;
   heat_per_hyd[i] = cv.heat_rate/cv.nH*punit->EnergyDensity/punit->Time;
-  
+
   return;
 
 }
