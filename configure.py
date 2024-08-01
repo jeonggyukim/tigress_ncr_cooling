@@ -9,26 +9,25 @@ makefile_output = 'Makefile'
 description = (
     "Prepare custom Makefile and defs.hpp for compiling tigress_ncr_cooling solver"
 )
-parser = argparse.ArgumentParser(description=description)
+parser = argparse.ArgumentParser(description=description,
+                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
 cxx_choices = [
     'g++',
     'g++-13',
     'g++-simd',
     'icpx',
-    'icpc',
 ]
 
 def c_to_cpp(arg):
     arg = arg.replace('gcc', 'g++', 1)
-    arg = arg.replace('icc', 'icpc', 1)
     arg = arg.replace('icx', 'icpx', 1)
     return arg
 
 # --cxx=[name] argument
 parser.add_argument(
     '--cxx',
-    default='icpx',
+    default='g++',
     type=c_to_cpp,
     choices=cxx_choices,
     help='select C++ compiler and default set of flags (works w/ or w/o -mpi)')
@@ -57,7 +56,7 @@ if args['cxx'] == 'g++':
 elif args['cxx'] == 'g++-13':
     makefile_options['COMPILER_COMMAND'] = 'g++-13'
     makefile_options['PREPROCESSOR_FLAGS'] = ''
-    makefile_options['COMPILER_FLAGS'] = '-O3 -std=c++11 -I/opt/homebrew/include' # -fopenmp'
+    makefile_options['COMPILER_FLAGS'] = '-O3 -std=c++11 -I/opt/homebrew/include'
     makefile_options['LINKER_FLAGS'] = ''
     makefile_options['LIBRARY_FLAGS'] = ''
 elif args['cxx'] == 'icpx':
@@ -71,7 +70,7 @@ elif args['cxx'] == 'icpx':
 
 # -debug argument
 if args['debug']:
-    makefile_options['COMPILER_FLAGS'] = '-O0 --std=c++11 -g -DATTACH_DEBUGGER'  # -Og
+    makefile_options['COMPILER_FLAGS'] = '-O0 --std=c++11 -g -DATTACH_DEBUGGER'
 else:
     pass
 
