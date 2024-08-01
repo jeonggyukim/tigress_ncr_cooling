@@ -15,7 +15,7 @@ temp_mu_init = 1e3
 <shielding>
 nH0 = 100.0
 len_shld0 = @len_shld0@
-pow_idx_shld = -0.7
+pow_idx_shld = @pow_idx_shld@
 col_shld_cr_cgs = 9.35e20
 
 <cooling>
