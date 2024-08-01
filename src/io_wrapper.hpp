@@ -12,6 +12,7 @@
 
 // C++ headers
 #include <cstdio>
+#include <cstdint>
 
 // Athena++ headers
 // #include "../athena.hpp"
