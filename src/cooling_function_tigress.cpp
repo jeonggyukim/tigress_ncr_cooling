@@ -795,7 +795,7 @@ Real CalculateFreeElectron(const Real xe, const Real xHI, const Real xH2, const 
                            const Real nH, const Real T, const Real Z_d, const Real Z_g,
                            const Real xi_CR, const Real chi_fuv, const Real chi_ci,
                            Real *xCII_eq) {
-  
+
   Real xe_new, xOII, xCII, xe_other;
   if (T < temp_hot0) {
     if (iChem) {
@@ -814,9 +814,9 @@ Real CalculateFreeElectron(const Real xe, const Real xHI, const Real xH2, const 
     xe_new = xHII + get_xe_cie(T, Z_g);
   }
   *xCII_eq = xCII;
-  
+
   return xe_new;
-  
+
 }
 
 Real HeatingOther(const Real xe, const Real xHI, const Real xH2,
@@ -825,7 +825,7 @@ Real HeatingOther(const Real xe, const Real xHI, const Real xH2,
                   const Real xi_ph_H2, const Real xi_diss_H2, const Real xi_ph_HI) {
 
   const int iPhotIon = 1;
-  
+
   Real heat = 0.0;
   heat += heatingCR(xe, xHI, xH2, nH, xi_CR);
   if (iPEheating) heat += heatingPE(xe, nH, T, Z_d, chi_fuv);
@@ -842,7 +842,7 @@ Real CoolingOther(const Real xe, const Real xHI, const Real xH2, const Real xHII
                   const Real nH, const Real T, const Real dvdr,
                   const Real Z_d, const Real Z_g, const Real xi_CR,
                   const Real chi_fuv, const Real chi_ci, const Real chi_co) {
-  
+
   Real c_OI=0.0, c_neb=0.0, c_CI=0.0, c_CII=0.0, c_CO=0.0, c_Rec=0.0;
   Real xOII, xCII, xCO, xOI, xCI;
   // Determine equilibrium abundances of OII and CII first
@@ -903,7 +903,7 @@ Real CoolingHII(const Real xe, const Real xHII, const Real nH, const Real T) {
   Real k_Hplus_e = 2.753e-14 * POW(bb, 1.5) *
     POW(1.0 + POW(cc, 0.407), -2.242);
   // Mean energy per recombination
-  Real Err_B = (0.684 - 0.0416*LOG(T*1e-4))*kb_*T;
+  Real Err_B = (0.684 - 0.0208*LOG(T*1e-4))*kb_*T;
   Real c_rec = Err_B*k_Hplus_e*nH*xe*xHII;
 
   return c_ff + c_rec;
@@ -1031,7 +1031,7 @@ Real heatingCR(const Real xe, const Real xHI, const Real xH2,
 Real heatingPE(const Real xe, const Real nH, const Real T,
                const Real Z_d, const Real chi_fuv) {
 
-  
+
   // JKIM: Floor for charging parameter ?
   // (WD01 does not recommend using their eqaution for x < 100)
   // if (x < 100.0) x = 100.0;
@@ -1172,7 +1172,7 @@ Real coolingHIion(const Real xe, const Real xHI, const Real nH, const Real T) {
 // grain recombination
 Real coolingRec(const Real xe, const Real nH, const Real T,
                 const Real Z_d, const Real chi_fuv) {
-  
+
   const Real ne = xe * nH;
   Real phi_PAH = (iPEheating == 3) ? 0.5 : 1;
   Real x = 1.7 * chi_fuv * sqrt(T)/ (xe*nH*phi_PAH) + 50.0;
@@ -1205,13 +1205,13 @@ Real coolingOI(const Real xe, const Real xOI, const Real xHI,
   const Real k10HI = 3.57e-10 * POW(T2, 0.419-0.003*lnT2);
   const Real k20HI = 3.19e-10 * POW(T2, 0.369-0.006*lnT2);
   const Real k21HI = 4.34e-10 * POW(T2, 0.755-0.160*lnT2);
-  /*H2*/
-  const Real k10H2p = 1.49e-10 * POW(T2, 0.264+0.025*lnT2);
-  const Real k10H2o = 1.37e-10 * POW(T2, 0.296+0.043*lnT2);
-  const Real k20H2p = 1.90e-10 * POW(T2, 0.203+0.041*lnT2);
-  const Real k20H2o = 2.23e-10 * POW(T2, 0.237+0.058*lnT2);
-  const Real k21H2p = 2.10e-12 * POW(T2, 0.889+0.043*lnT2);
-  const Real k21H2o = 3.00e-12 * POW(T2, 1.198+0.525*lnT2);
+  /*H2*/ // errata corrected
+  const Real k21H2p = 1.49e-10 * POW(T2, 0.369-0.026*lnT2);
+  const Real k21H2o = 1.37e-10 * POW(T2, 0.395-0.005*lnT2);
+  const Real k20H2p = 2.37e-10 * POW(T2, 0.255+0.016*lnT2);
+  const Real k20H2o = 2.23e-10 * POW(T2, 0.284+0.035*lnT2);
+  const Real k10H2p = 2.10e-12 * POW(T2, 1.117+0.070*lnT2);
+  const Real k10H2o = 3.00e-12 * POW(T2, 0.792+0.188*lnT2);
   const Real k10H2 = k10H2p*fp_ + k10H2o*fo_;
   const Real k20H2 = k20H2p*fp_ + k20H2o*fo_;
   const Real k21H2 = k21H2p*fp_ + k21H2o*fo_;
@@ -1232,7 +1232,7 @@ Real coolingOI(const Real xe, const Real xOI, const Real xHI,
 			A21OI_, E10OI_, E20OI_, E21OI_, xOI);
 }
 
-Real coolingneb(const Real xe, const Real xHII, const Real nH, const Real T, 
+Real coolingneb(const Real xe, const Real xHII, const Real nH, const Real T,
                 const Real Z_g) {
 
   Real T4 = T*1e-4;
