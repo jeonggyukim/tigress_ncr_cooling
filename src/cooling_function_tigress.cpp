@@ -1205,7 +1205,9 @@ Real coolingOI(const Real xe, const Real xOI, const Real xHI,
   const Real k10HI = 3.57e-10 * POW(T2, 0.419-0.003*lnT2);
   const Real k20HI = 3.19e-10 * POW(T2, 0.369-0.006*lnT2);
   const Real k21HI = 4.34e-10 * POW(T2, 0.755-0.160*lnT2);
-  /*H2*/ // errata corrected
+  /*H2*/
+  // errata corrected according to
+  // https://www.astro.princeton.edu/~draine/book/errata_p1.pdf
   const Real k21H2p = 1.49e-10 * POW(T2, 0.369-0.026*lnT2);
   const Real k21H2o = 1.37e-10 * POW(T2, 0.395-0.005*lnT2);
   const Real k20H2p = 2.37e-10 * POW(T2, 0.255+0.016*lnT2);
