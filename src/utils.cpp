@@ -51,10 +51,10 @@ void WriteData(std::string filename,
                Real *cool_per_hyd, Real *heat_per_hyd,
                const int n) {
 
-  const int prec = 5;
-  const int w = prec+7;
+  const int prec = 12;
+  const int w = prec + 8;
   Units *punit = new Units();
-  
+
   std::ofstream os;
   os.open(filename);
   os << std::setw(w) << "nH "
@@ -70,9 +70,9 @@ void WriteData(std::string filename,
      << std::setw(w) << "nLambda "
      << std::setw(w) << "Gamma "
      << std::endl;
-  
+
   // std::cout << std::setprecision(5) << std::left;
-  
+
   os << std::scientific << std::setprecision(prec) << std::left;
   for (int i=0; i<n; ++i) {
     PrintElement(os, nH[i], w);
