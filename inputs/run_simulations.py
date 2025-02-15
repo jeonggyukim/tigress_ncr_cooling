@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     tncinput_template = 'template.tncinput'
     # End time of simulations in Myr (sufficiently long to reach equilibrium)
-    t_end_Myr = 1e3
+    t_end_Myr = 1e4
 
     # Primary CR ionization rate [1/s]
     xi_cr0_def = 2e-16
