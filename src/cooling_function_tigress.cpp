@@ -1208,12 +1208,14 @@ Real coolingOI(const Real xe, const Real xOI, const Real xHI,
   /*H2*/
   // errata corrected according to
   // https://www.astro.princeton.edu/~draine/book/errata_p1.pdf
-  const Real k21H2p = 1.49e-10 * POW(T2, 0.369-0.026*lnT2);
-  const Real k21H2o = 1.37e-10 * POW(T2, 0.395-0.005*lnT2);
+  // Note: 3P2, 3P1, 3P0 in order of increasing energy for OI
+  // (Table 4.1 and Appendix E in Draine 2011)
+  const Real k10H2p = 1.49e-10 * POW(T2, 0.369-0.026*lnT2);
+  const Real k10H2o = 1.37e-10 * POW(T2, 0.395-0.005*lnT2);
   const Real k20H2p = 2.37e-10 * POW(T2, 0.255+0.016*lnT2);
   const Real k20H2o = 2.23e-10 * POW(T2, 0.284+0.035*lnT2);
-  const Real k10H2p = 2.10e-12 * POW(T2, 1.117+0.070*lnT2);
-  const Real k10H2o = 3.00e-12 * POW(T2, 0.792+0.188*lnT2);
+  const Real k21H2p = 2.10e-12 * POW(T2, 1.117+0.070*lnT2);
+  const Real k21H2o = 3.00e-12 * POW(T2, 0.792+0.188*lnT2);
   const Real k10H2 = k10H2p*fp_ + k10H2o*fo_;
   const Real k20H2 = k20H2p*fp_ + k20H2o*fo_;
   const Real k21H2 = k21H2p*fp_ + k21H2o*fo_;
